@@ -141,30 +141,21 @@ export const OrderPage = () => {
         });
     }, [contragents, phone]);
 
-    const handleSearchProducts = () => {
+    const filteredProducts = useMemo(() => {
+        if (!allProducts.length) return [];
+
         const q = productQuery.trim().toLowerCase();
-        setProductError(null);
-        setProductResults([]);
+        if (!q) return allProducts.slice(0, 30); // первые N как по умолчанию
 
-        if (!q) return;
+        return allProducts
+            .filter((p) => {
+                const name = String(p.name ?? "").toLowerCase();
+                const article = String(p.article ?? "").toLowerCase();
+                return name.includes(q) || article.includes(q);
+            })
+            .slice(0, 50);
+    }, [allProducts, productQuery]);
 
-        if (!allProducts.length) {
-            setProductError("Товары не загружены");
-            return;
-        }
-
-        const filtered = allProducts.filter((p) => {
-            const name = String(p.name ?? "").toLowerCase();
-            const article = String(p.article ?? "").toLowerCase();
-            return name.includes(q) || article.includes(q);
-        });
-
-        if (!filtered.length) {
-            setProductError("Ничего не найдено по запросу");
-        }
-
-        setProductResults(filtered.slice(0, 50));
-    };
 
     const handleAddToCart = (item: NomenclatureItem) => {
         setCart((prev) => {
@@ -330,14 +321,15 @@ export const OrderPage = () => {
                     <ProductsSection
                         productQuery={productQuery}
                         setProductQuery={setProductQuery}
-                        productResults={productResults}
+                        productResults={filteredProducts}
                         productError={productError}
-                        onSearchProducts={handleSearchProducts}
                         cart={cart}
                         onAddToCart={handleAddToCart}
                         onChangeQty={handleChangeQty}
                         onRemoveFromCart={handleRemoveFromCart}
                     />
+
+
                 </main>
 
                 <footer className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200">

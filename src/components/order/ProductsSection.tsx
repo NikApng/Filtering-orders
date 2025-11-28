@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { NomenclatureItem } from "@/types/api";
 import { CartItem } from "@/types/order";
@@ -8,7 +8,8 @@ interface ProductsSectionProps {
     setProductQuery: (v: string) => void;
     productResults: NomenclatureItem[];
     productError: string | null;
-    onSearchProducts: () => void;
+
+    onSearchProducts?: () => void;
     cart: CartItem[];
     onAddToCart: (item: NomenclatureItem) => void;
     onChangeQty: (id: CartItem["id"], delta: number) => void;
@@ -20,66 +21,69 @@ export const ProductsSection: FC<ProductsSectionProps> = ({
                                                               setProductQuery,
                                                               productResults,
                                                               productError,
-                                                              onSearchProducts,
                                                               cart,
                                                               onAddToCart,
                                                               onChangeQty,
                                                               onRemoveFromCart,
                                                           }) => {
+    const [isOpen, setIsOpen] = useState(false);
+
     return (
         <section className="bg-slate-50 rounded-2xl p-4 space-y-3">
             <h2 className="text-sm font-semibold mb-2">Товары</h2>
 
-            <div className="flex gap-2">
+            <div className="relative">
                 <input
                     value={productQuery}
                     onChange={(e) => setProductQuery(e.target.value)}
+                    onFocus={() => setIsOpen(true)}
+                    onBlur={() => setTimeout(() => setIsOpen(false), 150)}
                     placeholder="Поиск товара по названию или артикулу"
-                    className="flex-1 rounded-xl border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
-                <Button type="button" onClick={onSearchProducts}>
-                    Найти
-                </Button>
-            </div>
 
-            {productError && (
-                <p className="text-xs text-red-600">{productError}</p>
-            )}
+                {productError && (
+                    <p className="text-xs text-red-600 mt-1">{productError}</p>
+                )}
 
-            {productResults.length > 0 && (
-                <div className="mt-2 space-y-1">
-                    <p className="text-xs text-slate-500">Результаты поиска:</p>
-                    <div className="max-h-40 overflow-y-auto space-y-1">
-                        {productResults.map((p) => (
-                            <div
-                                key={p.id}
-                                className="flex items-center justify-between rounded-xl bg-white border border-slate-200 px-3 py-2 text-xs"
-                            >
-                                <div className="flex flex-col">
-                                    <span className="font-medium">{p.name}</span>
-                                    {p.article && (
-                                        <span className="text-slate-400">
-                      Арт. {p.article}
-                    </span>
-                                    )}
-                                    {typeof p.price === "number" && (
-                                        <span className="text-slate-600">
-                      {p.price.toLocaleString("ru-RU")} ₽
-                    </span>
-                                    )}
-                                </div>
-                                <Button
-                                    type="button"
-                                    size="sm"
-                                    onClick={() => onAddToCart(p)}
-                                >
-                                    Добавить
-                                </Button>
+                {isOpen && (
+                    <div className="absolute left-0 right-0 mt-1 max-h-56 overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-sm z-20">
+                        {productResults.length === 0 ? (
+                            <div className="px-3 py-2 text-xs text-slate-500">
+                                Товары не найдены. Попробуйте изменить запрос.
                             </div>
-                        ))}
+                        ) : (
+                            productResults.map((p) => (
+                                <button
+                                    key={p.id}
+                                    type="button"
+                                    onClick={() => onAddToCart(p)}
+                                    className="w-full px-3 py-2 flex items-center justify-between gap-2 text-xs hover:bg-slate-50"
+                                >
+                                    <div className="flex flex-col text-left">
+                    <span className="font-medium text-slate-800">
+                      {p.name}
+                    </span>
+                                        {p.article && (
+                                            <span className="text-slate-400">
+                        Арт. {p.article}
+                      </span>
+                                        )}
+                                        {typeof p.price === "number" && (
+                                            <span className="text-slate-600">
+                        {p.price.toLocaleString("ru-RU")} ₽
+                      </span>
+                                        )}
+                                    </div>
+                                    <span className="text-blue-600 text-[11px] font-semibold">
+                    Добавить
+                  </span>
+                                </button>
+                            ))
+                        )}
                     </div>
-                </div>
-            )}
+                )}
+            </div>
 
             <div className="mt-3">
                 <div className="flex justify-between items-center mb-1">
@@ -121,8 +125,8 @@ export const ProductsSection: FC<ProductsSectionProps> = ({
                                         -
                                     </Button>
                                     <span className="w-6 text-center text-xs">
-                                {item.quantity}
-                              </span>
+                    {item.quantity}
+                  </span>
                                     <Button
                                         type="button"
                                         size="sm"
