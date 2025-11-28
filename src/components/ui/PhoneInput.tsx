@@ -1,23 +1,22 @@
-import { FC, ChangeEvent, FocusEventHandler } from "react";
+import { FC, ChangeEvent } from "react";
 import clsx from "clsx";
 
 interface PhoneInputProps {
     value: string;
     onChange: (value: string) => void;
     className?: string;
+    onFocus?: () => void;
+    onBlur?: () => void;
     placeholder?: string;
-    onFocus?: FocusEventHandler<HTMLInputElement>;
-    onBlur?: FocusEventHandler<HTMLInputElement>;
 }
 
 export const PhoneInput: FC<PhoneInputProps> = ({
                                                     value,
                                                     onChange,
                                                     className,
-                                                    placeholder = "+7 (___) ___-__-__",
-                                                    onFocus,
-                                                    onBlur,
+                                                    ...rest
                                                 }) => {
+
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         const raw = e.target.value.replace(/\D/g, "");
 
@@ -31,30 +30,19 @@ export const PhoneInput: FC<PhoneInputProps> = ({
         onChange(formatted);
     };
 
-    const handleClear = () => {
-        onChange("");
-    };
-
     return (
-        <div className={clsx("relative", className)}>
-            <input
-                value={value}
-                onChange={handleChange}
-                placeholder={placeholder}
-                inputMode="tel"
-                onFocus={onFocus}
-                onBlur={onBlur}
-                className="w-full rounded-xl border border-slate-300 px-3 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            {value && (
-                <button
-                    type="button"
-                    onClick={handleClear}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 text-lg leading-none"
-                >
-                    ✕
-                </button>
+        <input
+            {...rest}
+            value={value}
+            onChange={handleChange}
+            placeholder="Введите номер"
+            inputMode="tel"
+            className={clsx(
+                "flex-1 rounded-xl border border-slate-300 px-3 py-2 pr-10 text-sm",
+                "focus:outline-none focus:ring-2 focus:ring-blue-500",
+                "[appearance:textfield] [&::-webkit-clear-button]:hidden [&::-webkit-search-cancel-button]:hidden",
+                className
             )}
-        </div>
+        />
     );
 };

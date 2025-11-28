@@ -1,1 +1,4 @@
 @import "tailwindcss";
+
+&::-webkit-search-cancel-button { display: none }
+&::-webkit-clear-button { display: none }

@@ -121,8 +121,8 @@ export const ProductsSection: FC<ProductsSectionProps> = ({
                                         -
                                     </Button>
                                     <span className="w-6 text-center text-xs">
-                    {item.quantity}
-                  </span>
+                                {item.quantity}
+                              </span>
                                     <Button
                                         type="button"
                                         size="sm"

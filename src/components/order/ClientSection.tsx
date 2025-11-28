@@ -51,26 +51,23 @@ export const ClientSection: FC<ClientSectionProps> = ({
                 <div className="relative">
                     <PhoneInput
                         value={phone}
-                        onChange={(val) => {
-                            setPhone(val);
-                            setIsContragentsOpen(true);
-                        }}
+                        onChange={setPhone}
                         onFocus={() => setIsContragentsOpen(true)}
-                        onBlur={() => setTimeout(() => setIsContragentsOpen(false), 150)}
-                        placeholder="Начните вводить номер"
-                        className="pr-8"
                     />
 
                     {phone && (
                         <button
-                            type="button"
-                            onClick={handleClearPhone}
-                            className="absolute inset-y-0 right-2 my-1 px-1 text-slate-400 hover:text-slate-700 text-lg leading-none"
+                            onClick={() => {
+                                setPhone("");
+                                setClient(null);
+                            }}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
                         >
-                            ×
+                            ✕
                         </button>
                     )}
                 </div>
+
             </div>
 
             <div className="text-xs">
